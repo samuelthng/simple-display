@@ -8,25 +8,28 @@ import { useContext, useEffect, useState } from 'react';
 import { FileManagerContext } from '../../context/fileManager';
 const SheetDisplay = ({ noDataText }) => {
 	const { data } = useContext(FileManagerContext);
-
 	const { SheetNames = [], Sheets = {} } = data ?? {};
+
 	const [activeSheet, setActiveSheet] = useState(null);
+	const [columns, setColumns] = useState(null);
+	const [tableData, setTableData] = useState(null);
+	const [tableLoading, setTableLoading] = useState(false);
 
 	useEffect(() => {
 		setActiveSheet(null); // if data mutates, remove active sheet.
+		setColumns(null);
+		setTableData(null);
+		setTableLoading(false);
 	}, [data]);
 
 	useEffect(() => {
 		if (SheetNames.length === 1) setActiveSheet(SheetNames[0]); // if there's only 1 sheet, use that.
 	}, [SheetNames])
-	
-	const [columns, setColumns] = useState([]);
-	const [tableData, setTableData] = useState([]);
-	const [tableLoading, setTableLoading] = useState(false);
 
 	/** Data to be rendered based on the active sheet. */
 	useEffect(() => {
 		setTableLoading(true);
+		if (!activeSheet) return;
 		const newColumns = [];
 		const sheetData = Sheets[activeSheet] || [];
 		const newTableData = Object.entries(sheetData).reduce((acc, [key, value]) => {
@@ -35,7 +38,7 @@ const SheetDisplay = ({ noDataText }) => {
 			const splitAlphabetsAndNumbers = /[a-z]+|[^a-z]+/gi;
 			const [column, rowString] = key.match(splitAlphabetsAndNumbers);
 			const row = parseInt(rowString) - 1;
-			
+
 			if (row === 0) {
 				newColumns.push({ 
 					key: column, 
@@ -47,9 +50,10 @@ const SheetDisplay = ({ noDataText }) => {
 			}
 
 			const newRows = [...acc];
-			newRows.splice(row, 1, { ...acc[row], [column]: value.v });
+			newRows.splice(row, 1, { ...acc[row], [column]: value.v, key: `${column}-${row}` });
 			return newRows;
 		}, []);
+
 		setColumns(newColumns);
 		setTableData(newTableData);
 		setTableLoading(false);
@@ -58,7 +62,7 @@ const SheetDisplay = ({ noDataText }) => {
 	return (
 		<Row>
 			{/* Render the table */}
-			{tableData.length > 0 && (
+			{columns && tableData && (
 				<Col span={24}>
 					<Card>
 						<Table columns={columns} dataSource={tableData} loading={tableLoading} bordered scroll={{ x: '100%' }} />
