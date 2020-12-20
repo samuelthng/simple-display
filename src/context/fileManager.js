@@ -9,7 +9,6 @@ export const FileManagerProvider = ({ children }) => {
 	useEffect(() => {
 		const parseFile = async file => {
 			if (file) {
-				console.info({ file });
 				try {
 					// Here we attempt to read the file as text, and parse the text as a workbook to our friendly neighbourhood xlsx. That dude gon convert text to something we can use later.
 					const buffer = await file.arrayBuffer();
@@ -23,7 +22,6 @@ export const FileManagerProvider = ({ children }) => {
 		}
 		parseFile(file);
 	}, [JSON.stringify(file)]); // eslint-disable-line react-hooks/exhaustive-deps
-	useEffect(() => data && console.log({ data }), [data]);
 	return (
 		<FileManagerContext.Provider value={{ file, setFile, data }}>
 			{children}
