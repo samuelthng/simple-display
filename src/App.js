@@ -1,24 +1,24 @@
-import logo from './logo.svg';
 import './App.css';
+import UI_STRINGS from './ui-strings.json';
+import Layout from 'antd/es/layout';
+import { Header, SheetDisplay, UploadCard } from './components';
+import { FileManagerProvider } from './context/fileManager';
 
 function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <FileManagerProvider>
+      <Layout style={{ height: '100%' }}>
+        <Layout.Header>
+          <Header title={UI_STRINGS.title} />
+        </Layout.Header>
+        <Layout.Content style={{ height: '100%' }}>
+          <main style={{ padding: '1em' }}>
+            <SheetDisplay noDataText={UI_STRINGS.noDataText} />
+            <UploadCard label={UI_STRINGS.uploadButtonText} />
+          </main>
+        </Layout.Content>
+      </Layout>
+    </FileManagerProvider>
   );
 }
 
